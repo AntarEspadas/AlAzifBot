@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using System.Reflection;
+using AlAzif.Exceptions;
+using DSharpPlus.Entities;
+using Lavalink4NET.InactivityTracking;
 
 namespace AlAzif;
 
@@ -17,24 +20,16 @@ public class AlAzifBot : IHostedService
     private readonly DiscordClient _client;
 
     public AlAzifBot(
+        DiscordClient client,
         ILogger<AlAzifBot> logger,
-        ILoggerFactory loggerFactory,
         IOptions<AlAzifConfig> config,
         IServiceProvider services,
-        IHostEnvironment env
+        IHostEnvironment env,
+        IInactivityTrackingService inactivityTrackingService
         )
     {
         _logger = logger;
-        
-        var discordConfig = new DiscordConfiguration
-        {
-            Token = config.Value.Token,
-            TokenType = TokenType.Bot,
-            Intents = DiscordIntents.All,
-            LoggerFactory = loggerFactory
-        };
-        
-        _client = new DiscordClient(discordConfig);
+        _client = client;
         
         _client.Ready += (s, e) =>
         {
@@ -49,7 +44,16 @@ public class AlAzifBot : IHostedService
         
         var commands = _client.UseSlashCommands(commandsConfig);
         
-        if (env.IsDevelopment())
+        commands.SlashCommandErrored += async (s, e) =>
+        {
+            _logger.LogError(e.Exception, "An error occurred while executing a slash command");
+            if (e.Exception is AlAzifException alAzifException)
+                await e.Context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("\ud83d\udeab " + alAzifException.Message));
+            else
+                await e.Context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("\ud83d\udeab An error occurred while executing the command"));
+        };
+        
+        if (env.IsProduction())
         {
             commands.RegisterCommands(Assembly.GetExecutingAssembly());
         }
@@ -68,15 +72,15 @@ public class AlAzifBot : IHostedService
         };
     }
  
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting AlAzifBot...");
-        return _client.ConnectAsync();
+        await _client.ConnectAsync();
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Stopping AlAzifBot...");
-        return _client.DisconnectAsync();
+        await _client.DisconnectAsync();
     }
 }
