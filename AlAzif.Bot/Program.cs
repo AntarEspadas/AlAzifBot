@@ -1,18 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using AlAzif;
 using AlAzif.Bot.Extensions;
-using Lavalink4NET.Extensions;
-using Lavalink4NET.Players;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
-var app = Host.CreateDefaultBuilder(args)
-    .UseAlAzif()
-    .ConfigureServices(services =>
-    {
-        services.AddLavalink();
-    })
-    .Build();
+var builder = WebApplication.CreateBuilder(args);
+
+builder.AddAlAzif();
+
+var app = builder.Build();
 
 app.Run();
