@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace AlAzif.Bot.Modules;
 
-public class TestModule(IOptions<AlAzifConfig> options) : ApplicationCommandModule
+public class DebugModule(IOptions<AlAzifConfig> options) : ApplicationCommandModule
 {
     
     [SlashCommand("ping", "Replies with Pong!")]
