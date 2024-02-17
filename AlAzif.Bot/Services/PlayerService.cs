@@ -2,6 +2,7 @@ using System.Diagnostics;
 using AlAzif.Bot.Exceptions;
 using AlAzif.Bot.Model;
 using Lavalink4NET;
+using Lavalink4NET.Clients;
 using Lavalink4NET.Players;
 using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Rest.Entities.Tracks;
@@ -12,11 +13,12 @@ namespace AlAzif.Bot.Services;
 
 public class PlayerService(ILogger<PlayerService> logger, IAudioService audioService, IOptions<QueuedLavalinkPlayerOptions> playerOptions)
 {
-    public async Task<String> PlayAsync(string query, ulong guildId, ulong channelId, SearchSite site)
+    public async Task<String> PlayAsync(string query, ulong guildId, ulong? channelId, SearchSite site)
     {
         var retrieveOptions = new PlayerRetrieveOptions
         {
             ChannelBehavior = PlayerChannelBehavior.Join,
+            VoiceStateBehavior = MemberVoiceStateBehavior.RequireSame
         };
         logger.LogDebug("Retrieving player for guild {GuildId} and channel {ChannelId}", guildId, channelId);
         var result = await audioService.Players.RetrieveAsync(guildId, channelId,
@@ -27,7 +29,7 @@ public class PlayerService(ILogger<PlayerService> logger, IAudioService audioSer
             var message = result.Status switch
             {
                 PlayerRetrieveStatus.UserNotInVoiceChannel => "You must be in a voice channel to use this command",
-                PlayerRetrieveStatus.VoiceChannelMismatch => "You must be in the same voice channel to use this command",
+                PlayerRetrieveStatus.VoiceChannelMismatch => "You must be in the same voice channel as the bot to use this command",
                 _ => throw new InvalidOperationException($"Cannot handle status {result.Status}")
             };
             throw new AlAzifException(message);

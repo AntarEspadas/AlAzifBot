@@ -15,7 +15,7 @@ public class PlayerModule(PlayerService playerService) : ApplicationCommandModul
         [Option("site", "The site to search")] SearchSite site = SearchSite.Youtube
     )
     {
-        var message = await playerService.PlayAsync(query, ctx.Guild.Id, ctx.Member.VoiceState.Channel.Id, site);
+        var message = await playerService.PlayAsync(query, ctx.Guild.Id, ctx.Member.VoiceState?.Channel?.Id, site);
         await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent(message));
     }
     
