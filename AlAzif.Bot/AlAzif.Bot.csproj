@@ -7,7 +7,8 @@
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <RootNamespace>AlAzif.Bot</RootNamespace>
-    </PropertyGroup>
+      <UserSecretsId>8defe028-cf9e-4b08-ada2-c8c81c26f059</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
       <Content Include="..\.dockerignore">
