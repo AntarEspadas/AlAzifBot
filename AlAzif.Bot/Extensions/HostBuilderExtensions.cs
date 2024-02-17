@@ -1,9 +1,6 @@
-using AlAzif.Configuration;
+using AlAzif.Bot.Configuration;
 using DSharpPlus;
-using Lavalink4NET.InactivityTracking;
 using Lavalink4NET.InactivityTracking.Extensions;
-using Lavalink4NET.InactivityTracking.Queue;
-using Lavalink4NET.Players;
 using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Tracking;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace AlAzif.Extensions;
+namespace AlAzif.Bot.Extensions;
 
 public static class HostBuilderExtensions
 {
@@ -33,7 +30,7 @@ public static class HostBuilderExtensions
 
                 services.Scan(scan => scan
                     .FromCallingAssembly()
-                    .AddClasses(classes => classes.InNamespaces("AlAzif.Services"))
+                    .AddClasses(classes => classes.InNamespaces("AlAzif.Bot.Services"))
                     .AsSelfWithInterfaces()
                     .WithSingletonLifetime()
                 );

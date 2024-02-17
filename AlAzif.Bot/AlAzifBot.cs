@@ -1,4 +1,3 @@
-using AlAzif.Configuration;
 using DSharpPlus;
 using DSharpPlus.SlashCommands;
 using Microsoft.Extensions.Hosting;
@@ -6,7 +5,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using System.Reflection;
-using AlAzif.Exceptions;
+using AlAzif.Bot.Configuration;
+using AlAzif.Bot.Exceptions;
 using DSharpPlus.Entities;
 using Lavalink4NET.InactivityTracking;
 

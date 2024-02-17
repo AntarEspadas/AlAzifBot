@@ -1,10 +1,10 @@
-using AlAzif.Configuration;
+using AlAzif.Bot.Configuration;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 using Microsoft.Extensions.Options;
 
-namespace AlAzif.Modules;
+namespace AlAzif.Bot.Modules;
 
 public class TestModule(IOptions<AlAzifConfig> options) : ApplicationCommandModule
 {

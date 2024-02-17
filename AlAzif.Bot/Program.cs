@@ -1,8 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using AlAzif;
-using AlAzif.Configuration;
-using AlAzif.Extensions;
+using AlAzif.Bot.Extensions;
 using Lavalink4NET.Extensions;
 using Lavalink4NET.Players;
 using Microsoft.Extensions.DependencyInjection;

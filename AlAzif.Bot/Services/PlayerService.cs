@@ -1,6 +1,6 @@
 using System.Diagnostics;
-using AlAzif.Exceptions;
-using AlAzif.Model;
+using AlAzif.Bot.Exceptions;
+using AlAzif.Bot.Model;
 using Lavalink4NET;
 using Lavalink4NET.Players;
 using Lavalink4NET.Players.Queued;
@@ -8,7 +8,7 @@ using Lavalink4NET.Rest.Entities.Tracks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace AlAzif.Services;
+namespace AlAzif.Bot.Services;
 
 public class PlayerService(ILogger<PlayerService> logger, IAudioService audioService, IOptions<QueuedLavalinkPlayerOptions> playerOptions)
 {

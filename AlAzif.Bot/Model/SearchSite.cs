@@ -1,6 +1,6 @@
 using DSharpPlus.SlashCommands;
 
-namespace AlAzif.Model;
+namespace AlAzif.Bot.Model;
 
 public enum SearchSite
 {

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlAzif", "AlAzif\AlAzif.csproj", "{2A23E773-4FF0-482F-BD6C-310FE0396A89}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlAzif.Bot", "AlAzif.Bot\AlAzif.Bot.csproj", "{2A23E773-4FF0-482F-BD6C-310FE0396A89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

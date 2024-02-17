@@ -1,4 +1,4 @@
-namespace AlAzif.Exceptions;
+namespace AlAzif.Bot.Exceptions;
 
 public class AlAzifException : Exception
 {

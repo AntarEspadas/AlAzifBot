@@ -1,10 +1,10 @@
-using AlAzif.Model;
-using AlAzif.Services;
+using AlAzif.Bot.Model;
+using AlAzif.Bot.Services;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
 
-namespace AlAzif.Modules;
+namespace AlAzif.Bot.Modules;
 
 public class PlayerModule(PlayerService playerService) : ApplicationCommandModule
 {

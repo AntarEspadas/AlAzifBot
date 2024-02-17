@@ -1,7 +1,6 @@
-using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 
-namespace AlAzif.Configuration;
+namespace AlAzif.Bot.Configuration;
 
 public class AlAzifConfig
 {
