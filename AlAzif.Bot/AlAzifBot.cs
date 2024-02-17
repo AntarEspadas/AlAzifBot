@@ -1,16 +1,13 @@
-using DSharpPlus;
-using DSharpPlus.SlashCommands;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-
 using System.Reflection;
 using AlAzif.Bot.Configuration;
 using AlAzif.Bot.Exceptions;
+using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.SlashCommands;
 using Lavalink4NET.InactivityTracking;
+using Microsoft.Extensions.Options;
 
-namespace AlAzif;
+namespace AlAzif.Bot;
 
 public class AlAzifBot : IHostedService
 {
@@ -30,12 +27,6 @@ public class AlAzifBot : IHostedService
     {
         _logger = logger;
         _client = client;
-        
-        _client.Ready += (s, e) =>
-        {
-            _logger.LogInformation("AlAzifBot started");
-            return Task.CompletedTask;
-        };
 
         var commandsConfig = new SlashCommandsConfiguration
         {
@@ -55,16 +46,25 @@ public class AlAzifBot : IHostedService
         
         if (env.IsProduction())
         {
+            _logger.LogDebug("Registering commands for all guilds");
             commands.RegisterCommands(Assembly.GetExecutingAssembly());
         }
         else
         {
+            _logger.LogDebug("Registering commands for test guilds: {TestGuilds}", config.Value.TestGuilds);
             foreach (var guild in config.Value.TestGuilds)
             {
                 commands.RegisterCommands(Assembly.GetExecutingAssembly(), guild);
             }
         }
-        
+         
+        _client.Ready += (s, e) =>
+        {
+            _logger.LogDebug("Registered commands: {Commands}", commands.RegisteredCommands);
+            _logger.LogInformation("AlAzifBot started");
+            return Task.CompletedTask;
+        };
+       
         _client.MessageCreated += async (s, e) =>
         {
             if (e.Message.Content.StartsWith("ping", StringComparison.CurrentCultureIgnoreCase))
