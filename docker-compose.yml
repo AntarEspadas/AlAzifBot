@@ -6,7 +6,7 @@ services:
     container_name: al-azif-bot
     restart: unless-stopped
     environment:
-      - AlAzif:Token=MTEyMTcxMzQ4Mjg1Mzc5Nzk1OQ.GZutdl.YEQfaQiI0AGlV07D8XEmMt0czz-xzunkt2EevU
+      - AlAzif:Token=your_token_here
     volumes:
       - ./AlAzif.Bot/appsettings.json:/app/appsettings.json
     # Run the bot in the same network as Lavalink
