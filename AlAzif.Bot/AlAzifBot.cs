@@ -4,7 +4,6 @@ using AlAzif.Bot.Exceptions;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.SlashCommands;
-using Lavalink4NET.InactivityTracking;
 using Microsoft.Extensions.Options;
 
 namespace AlAzif.Bot;
@@ -21,8 +20,7 @@ public class AlAzifBot : IHostedService
         ILogger<AlAzifBot> logger,
         IOptions<AlAzifConfig> config,
         IServiceProvider services,
-        IHostEnvironment env,
-        IInactivityTrackingService inactivityTrackingService
+        IHostEnvironment env
         )
     {
         _logger = logger;
@@ -44,12 +42,9 @@ public class AlAzifBot : IHostedService
                 await e.Context.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent("\ud83d\udeab An error occurred while executing the command"));
         };
         
-        if (env.IsProduction())
-        {
-            _logger.LogDebug("Registering commands for all guilds");
-            commands.RegisterCommands(Assembly.GetExecutingAssembly());
-        }
-        else
+        _logger.LogDebug("Registering commands for all guilds");
+        commands.RegisterCommands(Assembly.GetExecutingAssembly());
+        if (env.IsDevelopment())
         {
             _logger.LogDebug("Registering commands for test guilds: {TestGuilds}", config.Value.TestGuilds);
             foreach (var guild in config.Value.TestGuilds)

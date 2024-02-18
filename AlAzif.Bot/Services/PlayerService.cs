@@ -1,12 +1,14 @@
 using System.Diagnostics;
 using AlAzif.Bot.Exceptions;
 using AlAzif.Bot.Model;
+using AlAzif.Core.Procedures;
+using DSharpPlus.Entities;
 using Lavalink4NET;
 using Lavalink4NET.Clients;
 using Lavalink4NET.Players;
 using Lavalink4NET.Players.Queued;
 using Lavalink4NET.Rest.Entities.Tracks;
-using Microsoft.Extensions.Logging;
+using Lavalink4NET.Tracks;
 using Microsoft.Extensions.Options;
 
 namespace AlAzif.Bot.Services;
@@ -48,11 +50,11 @@ public class PlayerService(ILogger<PlayerService> logger, IAudioService audioSer
         logger.LogDebug("Loaded track {Title}", track?.Title);
         
         if (track is null)
-            throw new AlAzifException($"Failed to load track {query}");
+            throw new AlAzifException($"Failed to load track `{query}`");
 
         await player.PlayAsync(track);
         
-        if (player.Queue.Count > 0)
+        if (player.Queue.Any())
             // Clock emoji
             return $"\ud83d\udd53 Added `{track.Title}` to queue";
         // Play emoji
@@ -70,58 +72,82 @@ public class PlayerService(ILogger<PlayerService> logger, IAudioService audioSer
         };
     }
     
-    public async Task<String> SkipAsync(ulong guildId)
+    public async Task<(LavalinkTrack, LavalinkTrack?)> SkipAsync(ulong guildId)
     {
-        if (!audioService.Players.TryGetPlayer<QueuedLavalinkPlayer>(guildId, out var player))
-            throw new AlAzifException($"No player found for guild {guildId}");
+        var player = GetPlayer(guildId, audioService);
         
         Debug.Assert(player is not null);
         
-        var skippedTrack = player.CurrentTrack;
+        var currentTrack = player.CurrentTrack;
+        var nextTrack = player.Queue.FirstOrDefault()?.Track;
         
-        if (skippedTrack is null)
-            throw new AlAzifException("No tracks in queue");
+        if (currentTrack is null)
+            throw new AlAzifException("Nothing to skip");
         
-        logger.LogDebug("Skipping track");
+        logger.LogDebug("Skipping track. Tracks in queue: {Count}", player.Queue.Count);
         await player.SkipAsync();
         
-        // Fast forward emoji
-        var message = $"\u23e9 Skipped `{skippedTrack.Title}`";
+        return (currentTrack, nextTrack);
+    }
+    
+    public async Task<LavalinkTrack> PauseAsync(ulong guildId)
+    {
+        var player = GetPlayer(guildId, audioService);
+        
+        Debug.Assert(player is not null);
         
         var currentTrack = player.CurrentTrack;
         
-        if (currentTrack is not null)
-            // Play emoji
-            message += $"\n\u25b6\ufe0f Now playing `{currentTrack.Title}`";
-        
-        return message;
-    }
-    
-    public async Task<string> PauseAsync(ulong guildId)
-    {
-        if (!audioService.Players.TryGetPlayer<QueuedLavalinkPlayer>(guildId, out var player))
-            throw new AlAzifException($"No player found for guild {guildId}");
-        
-        Debug.Assert(player is not null);
+        if (currentTrack is null)
+            throw new AlAzifException("Noting to pause");
         
         logger.LogDebug("Pausing player");
         await player.PauseAsync();
-        
-        // Pause emoji
-        return "\u23f8\ufe0f Paused";
+
+        return currentTrack;
     }
 
-    public async Task<string> ResumeAsync(ulong guildId)
+    public async Task<LavalinkTrack> ResumeAsync(ulong guildId)
     {
-        if (!audioService.Players.TryGetPlayer<QueuedLavalinkPlayer>(guildId, out var player))
-            throw new AlAzifException($"No player found for guild {guildId}");
+        var player = GetPlayer(guildId, audioService);
         
         Debug.Assert(player is not null);
         
+        var currentTrack = player.CurrentTrack;
+        
+        if (currentTrack is null)
+            throw new AlAzifException("Noting to resume");
+        
         logger.LogDebug("Resuming player");
         await player.ResumeAsync();
+
+        return currentTrack;
+    }
+
+    public DiscordEmbedBuilder GetPlaylist(ulong guildId)
+    {
+        var player = GetPlayer(guildId, audioService);
         
-        // Play emoji
-        return $"\u25b6\ufe0f Resumed";
+        Debug.Assert(player is not null);
+
+        return PlayerProcedures.displayQueue(player);
+    }
+
+    public async Task Disconnect(ulong guildId)
+    {
+        var player = GetPlayer(guildId, audioService);
+                
+        logger.LogDebug("Disconnecting player");
+        await player.DisconnectAsync();
+    }
+    
+    private static IQueuedLavalinkPlayer GetPlayer(ulong guildId, IAudioService audioService)
+    {
+        if (!audioService.Players.TryGetPlayer<QueuedLavalinkPlayer>(guildId, out var player))
+            throw new AlAzifException($"Bot is not in a voice channel");
+        
+        Debug.Assert(player is not null);
+        
+        return player;
     }
 }

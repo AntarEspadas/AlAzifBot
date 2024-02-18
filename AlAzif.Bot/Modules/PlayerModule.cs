@@ -24,7 +24,10 @@ public class PlayerModule(PlayerService playerService) : ApplicationCommandModul
         InteractionContext ctx
     )
     {
-        var message = await playerService.SkipAsync(ctx.Guild.Id);
+        var (currentTrack, nextTrack) = await playerService.SkipAsync(ctx.Guild.Id);
+        var message = $"\u23e9 Skipped `{currentTrack.Title}`";
+        if (nextTrack is not null)
+            message += $"\n\u25b6\ufe0f Now playing `{nextTrack.Title}`";
         await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent(message));
     }
     
@@ -33,7 +36,8 @@ public class PlayerModule(PlayerService playerService) : ApplicationCommandModul
         InteractionContext ctx
     )
     {
-        var message = await playerService.PauseAsync(ctx.Guild.Id);
+        var track = await playerService.PauseAsync(ctx.Guild.Id);
+        var message = $"\u23f8\ufe0f Paused `{track.Title}`";
         await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent(message));
     }
 
@@ -42,7 +46,27 @@ public class PlayerModule(PlayerService playerService) : ApplicationCommandModul
         InteractionContext ctx
     )
     {
-        var message = await playerService.ResumeAsync(ctx.Guild.Id);
+        var track = await playerService.ResumeAsync(ctx.Guild.Id);
+        var message = $"\u25b6\ufe0f Resumed `{track.Title}`";
+        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent(message));
+    }
+    
+    [SlashCommand("playlist", "View the current playlist")]
+    public async Task PlaylistCommand(
+        InteractionContext ctx
+    )
+    {
+        var embed = playerService.GetPlaylist(ctx.Guild.Id);
+        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().AddEmbed(embed));
+    }
+    
+    [SlashCommand("disconnect", "Disconnect the bot from the voice channel")]
+    public async Task DisconnectCommand(
+        InteractionContext ctx
+    )
+    {
+        await playerService.Disconnect(ctx.Guild.Id);
+        const string message = "\ud83d\udd34 Disconnected";
         await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent(message));
     }
 }
