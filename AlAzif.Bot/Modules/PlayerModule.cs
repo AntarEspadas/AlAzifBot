@@ -42,5 +42,7 @@ public class PlayerModule(PlayerService playerService) : ApplicationCommandModul
         InteractionContext ctx
     )
     {
+        var message = await playerService.ResumeAsync(ctx.Guild.Id);
+        await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new DiscordInteractionResponseBuilder().WithContent(message));
     }
 }

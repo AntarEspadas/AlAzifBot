@@ -108,6 +108,20 @@ public class PlayerService(ILogger<PlayerService> logger, IAudioService audioSer
         await player.PauseAsync();
         
         // Pause emoji
-        return "\u23f8 Paused";
+        return "\u23f8\ufe0f Paused";
+    }
+
+    public async Task<string> ResumeAsync(ulong guildId)
+    {
+        if (!audioService.Players.TryGetPlayer<QueuedLavalinkPlayer>(guildId, out var player))
+            throw new AlAzifException($"No player found for guild {guildId}");
+        
+        Debug.Assert(player is not null);
+        
+        logger.LogDebug("Resuming player");
+        await player.ResumeAsync();
+        
+        // Play emoji
+        return $"\u25b6\ufe0f Resumed";
     }
 }
