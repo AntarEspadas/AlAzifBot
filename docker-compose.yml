@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  bot:
+    image: ghcr.io/antarespadas/al-azif-bot:latest
+    container_name: al-azif-bot
+    restart: unless-stopped
+    environment:
+      - AlAzif:Token=YOUR_DISCORD_BOT_TOKEN
+    volumes:
+      - ./AlAzif.Bot/appsettings.json:/app/appsettings.json
+    networks:
+      - al-azif
+  lavalink:
+    # pin the image version to Lavalink v4
+    image: ghcr.io/lavalink-devs/lavalink:4
+    container_name: al-azif-lavalink
+    restart: unless-stopped
+    environment:
+      # set Java options here
+      - _JAVA_OPTIONS=-Xmx6G
+    volumes:
+      # mount application.yml from the same directory or use environment variables
+      - ./lavalink.yml:/opt/Lavalink/application.yml
+      # persist plugins between restarts, make sure to set the correct permissions (user: 322, group: 322)
+      - ./plugins/:/opt/Lavalink/plugins/
+    networks:
+      - al-azif
+    expose:
+      # lavalink exposes port 2333 to connect to for other containers (this is for documentation purposes only)
+      - 2333
+networks:
+  # create a lavalink network you can add other containers to, to give them access to Lavalink
+  al-azif:
+    name: al-azif
