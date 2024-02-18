@@ -70,6 +70,11 @@ jobs:
         uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          
+      # Normally, the application is built inside the container, but in this case, since it's a multi-platform build,
+      # doing so would cause multiple redundant builds. .NET is already multiplatform, so we can just build it here.
+      - name: Build application
+        run: dotnet publish -c Release -o ./bin/publish ./AlAzif.Bot/AlAzif.Bot.csproj
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
