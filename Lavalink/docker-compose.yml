@@ -8,6 +8,3 @@ services:
     container_name: al-azif-lavalink-dev
     ports:
       - "2333:2333"
-networks:
-  al-azif:
-      name: al-azif
